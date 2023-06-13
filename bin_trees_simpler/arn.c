@@ -5,7 +5,14 @@
 #include "arn.h"
 
 static NOH* NOH_Criar(int chave, int valor){
+    NOH* novo = malloc(sizeof(NOH));
+    novo->chave = chave;
+    novo->valor = valor;
+    novo->dir = NULL;
+    novo->esq = NULL;
+    novo->cor = C_VERMELHO;
 
+    return novo;
 }
 
 static inline bool NOH_Eh_Vermelho(NOH* N){
@@ -34,7 +41,36 @@ NOH* ARN_Buscar(ARN* A, int chave);
 
 
 static NOH* ARN_Inserir_R(NOH* N, int chave, int valor){
+    if(N == NULL){
+        return NOH_Criar(chave,valor);
+    }
 
+    if (chave < N->chave)
+    {
+        N->esq = ARN_Inserir_R(N->esq,chave,valor);
+    }
+    else{
+        if(chave> N->chave){
+            N->dir = ARN_Inserir_R(N->dir,chave,valor);
+        }
+        else{
+            N->valor = valor;
+        }
+    }
+
+    if(!NOH_Eh_Vermelho(N->esq) && NOH_Eh_Vermelho(N->dir)){
+        N = ARN_Rot_Esq(N);
+    }
+    if(NOH_Eh_Vermelho(N->esq) && NOH_Eh_Vermelho(N->esq->esq)){
+        N = ARN_Rot_Dir(N);
+    };
+
+    if(NOH_Eh_Vermelho(N->esq) && NOH_Eh_Vermelho(N->dir)){
+        ARN_InverterCores(N);
+    };
+
+    return N;
+    
 }
 
 // Insere o par (chave, valor) na árvore A. 
